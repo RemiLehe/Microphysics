@@ -172,19 +172,10 @@ void actual_eos (I input, T& state)
 
     }
 
-    // we can always get the heavy and electron temperatures
-    // Note: this assumes that aion[i_ion] == aion[i_neut]
-
-/*    Real T_h = state.e * aion[i_ion] * m_nucleon * (eos_gamma - 1.0_rt) /
-        ((state.xn[i_ion] + state.xn[i_neut]) * C::k_B) * (1.0_rt - state.aux[0]);
-
-    Real T_e = state.e * aion[i_ion] * m_nucleon * (eos_gamma - 1.0_rt) /
-        (state.xn[i_ion] * zion[i_ion] * C::k_B) * state.aux[0]; */
-
     // Now we have the density and temperature (and mass fractions /
     // mu), regardless of the inputs.
 
-    amrex::Real Tinv = 1.0 / state.T;
+    amrex::Real Tinv = 1.0 / state.T; // Replace this with the mean temperature
     amrex::Real rhoinv = 1.0 / state.rho;
 
     // Compute the pressure simply from the ideal gas law, and the
@@ -211,26 +202,6 @@ void actual_eos (I input, T& state)
     if constexpr (has_energy<T>::value) {
         state.dedT = state.e * Tinv;
         state.dedr = 0.0;
-    }
-    if constexpr (has_entropy<T>::value) {
-        state.dsdT = 1.5 * (C::k_B / (state.mu * m_nucleon)) * Tinv;
-        state.dsdr = - (C::k_B / (state.mu * m_nucleon)) * rhoinv;
-    }
-    if constexpr (has_enthalpy<T>::value) {
-        state.dhdT = state.dedT + state.dpdT * rhoinv;
-        state.dhdr = 0.0;
-    }
-
-    if constexpr (has_xne_xnp<T>::value) {
-        state.xne = 0.0;
-        state.xnp = 0.0;
-    }
-    if constexpr (has_eta<T>::value) {
-        state.eta = 0.0;
-    }
-    if constexpr (has_pele_ppos<T>::value) {
-        state.pele = 0.0;
-        state.ppos = 0.0;
     }
 
     if constexpr (has_energy<T>::value) {
