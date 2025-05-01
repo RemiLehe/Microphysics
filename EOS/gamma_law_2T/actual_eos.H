@@ -205,8 +205,7 @@ void actual_eos (I input, T& state)
     }
 
     // Compute the thermodynamic derivatives and specific heats
-    amrex::Real average_T = state.mu * m_nucleon / (C::k_B * state.rho);
-    amrex::Real Tinv = 1.0 / average_T;
+    amrex::Real Tinv = 1.0 / state.T;
     if constexpr (has_pressure<T>::value) {
         state.dpdT = state.p * Tinv;
         state.dpdr = state.p * rhoinv;
