@@ -122,7 +122,7 @@ void actual_eos (I input, T& state)
               // Find the fraction of internal energy stored in heavies
               amrex::Real f = state.aux[0];
               // Calculate the electron temperature and set state.T to this value
-              state.T = state.p * state.mu * m_nucleon * (1.0 - f) / (C::k_B * state.rho * x_e);
+              state.T = state.p * m_nucleon * (1.0 - f) / (C::k_B * state.rho * x_e);
           }
 
           break;
@@ -136,7 +136,7 @@ void actual_eos (I input, T& state)
               // Find the fraction of internal energy stored in heavies
               amrex::Real f = state.aux[0];
               // Calculate the electron temperature and set state.T to this value
-              state.T = state.e * state.mu * m_nucleon * (1.0 - f) * (eos_rp::eos_gamma - 1.0) / (C::k_B * x_e);
+              state.T = state.e * m_nucleon * (1.0 - f) * (eos_rp::eos_gamma - 1.0) / (C::k_B * x_e);
           }
 
           break;
@@ -190,7 +190,7 @@ void actual_eos (I input, T& state)
     // Compute the pressure simply from the ideal gas law, and the
     // specific internal energy using the gamma-law EOS relation.
     amrex::Real f = state.aux[0];
-    amrex::Real pressure = state.rho * x_e * state.T * C::k_B / (state.mu * m_nucleon * (1.0 - f));
+    amrex::Real pressure = state.rho * x_e * state.T * C::k_B / (m_nucleon * (1.0 - f));
     amrex::Real energy = pressure / (eos_rp::eos_gamma - 1.0) * rhoinv;
     if constexpr (has_pressure<T>::value) {
         state.p = pressure;
