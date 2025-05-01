@@ -203,16 +203,6 @@ void actual_eos (I input, T& state)
         state.h = energy + pressure * rhoinv;
     }
 
-    // entropy (per gram) of an ideal monoatomic gas (the Sackur-Tetrode equation)
-    // NOTE: this expression is only valid for gamma = 5/3.
-    if constexpr (has_entropy<T>::value) {
-        const amrex::Real fac = 1.0 / std::pow(2.0 * M_PI * C::hbar * C::hbar, 1.5);
-
-        state.s = (C::k_B / (state.mu * m_nucleon)) *
-                  (2.5 + std::log((std::pow(state.mu * m_nucleon, 2.5) * rhoinv) *
-                                  std::pow(C::k_B * state.T, 1.5) * fac));
-    }
-
     // Compute the thermodynamic derivatives and specific heats
     if constexpr (has_pressure<T>::value) {
         state.dpdT = state.p * Tinv;
@@ -262,19 +252,6 @@ void actual_eos (I input, T& state)
         }
     }
 
-    if constexpr (has_dpdA<T>::value) {
-        state.dpdA = - state.p * (1.0 / state.abar);
-    }
-    if constexpr (has_dedA<T>::value) {
-        state.dedA = - state.e * (1.0 / state.abar);
-    }
-
-    if constexpr (has_dpdZ<T>::value) {
-        state.dpdZ = state.p * (1.0 / (1.0 + state.zbar));
-    }
-    if constexpr (has_dedZ<T>::value) {
-        state.dedZ = state.e * (1.0/(1.0 + state.zbar));
-    }
 }
 
 
