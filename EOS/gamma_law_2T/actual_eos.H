@@ -216,7 +216,7 @@ void actual_eos (I input, T& state)
     }
 
     if constexpr (has_energy<T>::value) {
-        state.cv = state.dedT;
+        state.cv = x_e * C::k_B / (m_nucleon * (eos_rp::eos_gamma - 1.0));
 
         if constexpr (has_pressure<T>::value) {
             state.cp = eos_rp::eos_gamma * state.cv;
