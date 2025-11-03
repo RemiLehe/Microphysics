@@ -70,7 +70,7 @@ void composition (T& state)
     sum += state.xn[n] * zion[n] * aion_inv[n];
   }
 
-  state.mu_e = 1.0 / sum;
+  state.mu_e = sum > 0. ? 1.0 / sum : 0.;
   state.y_e = sum;
 
   sum = 0;
@@ -79,7 +79,7 @@ void composition (T& state)
     sum += state.xn[n] * aion_inv[n];
   }
 
-  state.abar = 1.0 / sum;
+  state.abar = sum > 0. ? 1.0 / sum : 0.;
   state.zbar = state.abar * state.y_e;
 #endif
 }

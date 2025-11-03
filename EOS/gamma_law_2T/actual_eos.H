@@ -123,6 +123,9 @@ void actual_eos (I input, T& state)
               amrex::Real f = state.aux[0];
               // Calculate the electron temperature and set state.T to this value
               state.T = state.p * m_nucleon * (1.0 - f) / (C::k_B * state.rho * x_e);
+              if (state.T == 0.) {
+                state.T = 2.e-100;
+              }
           }
 
           break;
@@ -137,6 +140,9 @@ void actual_eos (I input, T& state)
               amrex::Real f = state.aux[0];
               // Calculate the electron temperature and set state.T to this value
               state.T = state.e * m_nucleon * (1.0 - f) * (eos_rp::eos_gamma - 1.0) / (C::k_B * x_e);
+              if (state.T == 0.) {
+                state.T = 2.e-100;
+              }
           }
 
           break;
@@ -190,7 +196,9 @@ void actual_eos (I input, T& state)
     // Compute the pressure simply from the ideal gas law, and the
     // specific internal energy using the gamma-law EOS relation.
     amrex::Real f = state.aux[0];
-    amrex::Real pressure = state.rho * x_e * state.T * C::k_B / (m_nucleon * (1.0 - f));
+    amrex::Real nuc_frac = m_nucleon * (1.0 - f);
+    amrex::Real nuc_frac_inv = nuc_frac > 0. ? 1. / nuc_frac : 0.1;
+    amrex::Real pressure = state.rho * x_e * state.T * C::k_B * nuc_frac_inv;
     amrex::Real energy = pressure / (eos_rp::eos_gamma - 1.0) * rhoinv;
     if constexpr (has_pressure<T>::value) {
         state.p = pressure;
@@ -223,8 +231,10 @@ void actual_eos (I input, T& state)
 
             state.gam1 = eos_rp::eos_gamma;
 
-            state.dpdr_e = state.dpdr - state.dpdT * state.dedr * (1.0 / state.dedT);
-            state.dpde = state.dpdT * (1.0 / state.dedT);
+            amrex::Real dedT_inv = state.dedT > 0. ? 1.0 / state.dedT : 1.;
+
+            state.dpdr_e = state.dpdr - state.dpdT * state.dedr * dedT_inv;
+            state.dpde = state.dpdT * dedT_inv;
 
             // sound speed
             state.cs = std::sqrt(eos_rp::eos_gamma * state.p * rhoinv);
